@@ -44,6 +44,8 @@ export default (state = INITIAL_STATE, action) => {
     // ======================================== LOGOUT
     case "LOGOUT":
       return { ...INITIAL_STATE, logout: true };
+    case "RESET":
+      return INITIAL_STATE;
 
     // ======================================== MODAL AUTH
     case "MODAL_AUTH":

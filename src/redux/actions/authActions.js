@@ -1,6 +1,20 @@
 import Axios from "axios";
 import { API_URL } from "../../config/API_URL";
 
+export const KeepLoginThunk = id => {
+  return async dispatch => {
+    try {
+      if (id) {
+        const { data } = await Axios.get(`${API_URL}/auth/login/${id}`);
+        dispatch({ type: "LOGIN_SUCCESS", payload: data.result });
+      }
+    } catch (err) {
+      console.log(err);
+      dispatch({ type: "SERVER_ERROR", payload: "Server error!" });
+    }
+  };
+};
+
 export const LoginActionThunk = (username, password) => {
   return async dispatch => {
     try {
