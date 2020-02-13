@@ -101,6 +101,15 @@ function Categories() {
         <h2>
           <code>Categories UI</code>
         </h2>
+
+        <PaginationComp
+          currentPage={currentPage}
+          pagesCount={maxPage}
+          handlePageClick={handlePageClick}
+          handlePreviousClick={handlePageClick}
+          handleNextClick={handlePageClick}
+        />
+
         <table className="table table-dark table-hover w-50">
           <thead>
             <tr className="text-center">
@@ -114,7 +123,7 @@ function Categories() {
               if (onEdit === id) {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{cat.id}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>
                       <input defaultValue={cat.name} type="text" className="text-center w-75" />
                     </td>
@@ -131,7 +140,7 @@ function Categories() {
               } else if (onDelete === id) {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{cat.id}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>{`Are you sure deleting ${cat.name}?`}</td>
                     <td style={{ width: "20%" }}>
                       <button onClick={confirmDelete} className="btn btn-sm btn-danger w-25 mr-3">
@@ -146,7 +155,7 @@ function Categories() {
               } else {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{cat.id}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>{cat.name}</td>
                     <td style={{ width: "20%" }}>
                       <button onClick={() => btnEdit(id)} className="btn btn-sm btn-primary w-25 mr-3">
@@ -162,8 +171,6 @@ function Categories() {
             })}
           </tbody>
         </table>
-
-        <PaginationComp currentPage={currentPage} pagesCount={maxPage} handlePageClick={handlePageClick} />
       </section>
     </div>
   );

@@ -7,9 +7,13 @@ import { toast } from "react-toastify";
 
 import { API_URL } from "../config/API_URL";
 
+import { PaginationComp } from "../components/Pagination";
+
 function Movies() {
   const Login = useSelector(state => state.auth.login);
   const [movies, setMovies] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(0);
 
   const [onEdit, setOnEdit] = useState(-1);
   const [onDelete, setOnDelete] = useState(-1);
@@ -17,14 +21,20 @@ function Movies() {
   useEffect(() => {
     const getMovies = async () => {
       try {
-        const { data } = await Axios.get(`${API_URL}/movie`);
-        setMovies(data);
+        const { data } = await Axios.get(`${API_URL}/movie/page/${currentPage}`);
+        setMovies(data.results);
+        setMaxPage(data.maxPage);
       } catch (err) {
         console.log(err);
       }
     };
     getMovies();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageClick = (e, idx) => {
+    e.preventDefault();
+    setCurrentPage(idx);
+  };
 
   const btnDelete = id => {
     toast.warn("Are you sure?", {
@@ -91,6 +101,15 @@ function Movies() {
         <h2>
           <code>Movies UI</code>
         </h2>
+
+        <PaginationComp
+          currentPage={currentPage}
+          pagesCount={maxPage}
+          handlePageClick={handlePageClick}
+          handlePreviousClick={handlePageClick}
+          handleNextClick={handlePageClick}
+        />
+
         <table className="table table-dark table-hover">
           <thead>
             <tr className="text-center">
@@ -106,7 +125,7 @@ function Movies() {
               if (onEdit === id) {
                 return (
                   <tr className="text-center">
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>
                       <input className="text-center w-75" type="text" defaultValue={movie.name} />
                     </td>
@@ -129,7 +148,7 @@ function Movies() {
               } else if (onDelete === id) {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>{movie.name}</td>
                     <td style={{ width: "10%" }}>{movie.year}</td>
                     <td
@@ -151,7 +170,7 @@ function Movies() {
               } else {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{(currentPage - 1) * 5 + id + 1}</td>
                     <td style={{ width: "20%" }}>{movie.name}</td>
                     <td style={{ width: "10%" }}>{movie.year}</td>
                     <td style={{ width: "35%" }}>{movie.description}</td>
