@@ -7,9 +7,13 @@ import { toast } from "react-toastify";
 
 import { API_URL } from "../config/API_URL";
 
+import { PaginationComp } from "../components/Pagination";
+
 function Categories() {
   const Login = useSelector(state => state.auth.login);
   const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(0);
 
   const [onEdit, setOnEdit] = useState(-1);
   const [onDelete, setOnDelete] = useState(-1);
@@ -17,14 +21,20 @@ function Categories() {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const { data } = await Axios.get(`${API_URL}/cat`);
-        setCategories(data);
+        const { data } = await Axios.get(`${API_URL}/cat/page/${currentPage}`);
+        setCategories(data.results);
+        setMaxPage(data.maxPage);
       } catch (err) {
         console.log(err);
       }
     };
     getCategories();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageClick = (e, idx) => {
+    e.preventDefault();
+    setCurrentPage(idx);
+  };
 
   const btnDelete = id => {
     toast.warn("Are you sure?", {
@@ -104,7 +114,7 @@ function Categories() {
               if (onEdit === id) {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{cat.id}</td>
                     <td style={{ width: "20%" }}>
                       <input defaultValue={cat.name} type="text" className="text-center w-75" />
                     </td>
@@ -121,7 +131,7 @@ function Categories() {
               } else if (onDelete === id) {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{cat.id}</td>
                     <td style={{ width: "20%" }}>{`Are you sure deleting ${cat.name}?`}</td>
                     <td style={{ width: "20%" }}>
                       <button onClick={confirmDelete} className="btn btn-sm btn-danger w-25 mr-3">
@@ -136,7 +146,7 @@ function Categories() {
               } else {
                 return (
                   <tr className="text-center" key={id}>
-                    <td style={{ width: "10%" }}>{id + 1}</td>
+                    <td style={{ width: "10%" }}>{cat.id}</td>
                     <td style={{ width: "20%" }}>{cat.name}</td>
                     <td style={{ width: "20%" }}>
                       <button onClick={() => btnEdit(id)} className="btn btn-sm btn-primary w-25 mr-3">
@@ -152,6 +162,8 @@ function Categories() {
             })}
           </tbody>
         </table>
+
+        <PaginationComp currentPage={currentPage} pagesCount={maxPage} handlePageClick={handlePageClick} />
       </section>
     </div>
   );
