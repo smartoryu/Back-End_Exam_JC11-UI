@@ -8,9 +8,12 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { KeepLoginThunk } from "./redux/actions";
 
-import Home from "./pages/Home";
 import Header from "./components/Header";
 import ModalAuth from "./components/ModalAuth";
+
+import Home from "./pages/Home";
+import Movies from "./pages/Movies";
+import Categories from "./pages/Categories";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,12 +26,13 @@ function App() {
 
   return (
     <Fragment>
-      <Header />
       <ModalAuth />
+      <Header />
 
       <Switch>
         <Route exact path="/" component={Home} />
-        {/* <Route path="/login" component={ModalAuth} /> */}
+        <Route exact path="/movies" component={Movies} />
+        <Route exact path="/categories" component={Categories} />
       </Switch>
     </Fragment>
   );

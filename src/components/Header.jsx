@@ -15,12 +15,11 @@ import {
 } from "reactstrap";
 import { FaRegUser } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const Name = useSelector(state => state.auth.name);
   const Login = useSelector(state => state.auth.login);
-  const Logout = useSelector(state => state.auth.logout);
   const dispatch = useDispatch();
 
   const [isCollapse, setIsCollapse] = useState(false);
@@ -45,85 +44,106 @@ const Header = () => {
     });
   };
 
-  if (Logout) {
-    dispatch({ type: "RESET" });
-    return <Redirect to="/" />;
-  } else {
-    return (
-      <div>
-        <Navbar color="dark" dark expand="md">
-          <NavbarBrand href="/">BackEnd Exam</NavbarBrand>
-          <NavbarToggler onClick={handleCollapse} />
-          <Collapse isOpen={isCollapse} navbar>
-            <Nav className="mr-auto" navbar>
-              {Login ? (
-                <Dropdown
-                  isOpen={isMenuOpen}
-                  onMouseEnter={() => setIsMenuOpen(true)}
-                  onMouseLeave={() => setIsMenuOpen(false)}
-                  nav
-                  inNavbar>
-                  <DropdownToggle nav caret>
-                    Select menu
-                  </DropdownToggle>
-                  <DropdownMenu right={false}>
-                    <DropdownItem>Manage Movies</DropdownItem>
-                    <DropdownItem>Manage Categories</DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem disabled>Connection List</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <Dropdown
-                  isOpen={isMenuOpen}
-                  onMouseEnter={() => setIsMenuOpen(true)}
-                  onMouseLeave={() => setIsMenuOpen(false)}
-                  nav
-                  inNavbar>
-                  <DropdownToggle nav caret>
-                    Select menu
-                  </DropdownToggle>
-                  <DropdownMenu right={false}>
-                    <DropdownItem disabled>Login first!</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              )}
-            </Nav>
-            <Nav className="ml-auto" navbar>
-              {Login ? (
-                <Dropdown
-                  isOpen={isAccountOpen}
-                  onMouseEnter={() => setIsAccountOpen(true)}
-                  onMouseLeave={() => setIsAccountOpen(false)}
-                  nav
-                  inNavbar>
-                  <DropdownToggle nav>
-                    Hi, {Name}! <FaRegUser />
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem>
-                      <NavLink style={{ color: "inherit" }} onClick={handleLogout}>
-                        Logout
-                      </NavLink>
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <NavItem style={{ cursor: "pointer" }}>
-                  <NavLink onClick={() => dispatch({ type: "MODAL_AUTH", payload: true })}>
-                    Account <FaRegUser />
-                  </NavLink>
-                </NavItem>
-              )}
-              <NavItem>
-                <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
-              </NavItem>
-            </Nav>
-          </Collapse>
-        </Navbar>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Navbar color="dark" dark expand="md">
+        <NavbarBrand href="/">BackEnd Exam</NavbarBrand>
+        <NavbarToggler onClick={handleCollapse} />
+        <Collapse isOpen={isCollapse} navbar>
+          <Nav className="mr-auto" navbar>
+            {Login ? (
+              <Dropdown
+                isOpen={isMenuOpen}
+                onMouseEnter={() => setIsMenuOpen(true)}
+                onMouseLeave={() => setIsMenuOpen(false)}
+                toggle={() => setIsMenuOpen(prevState => !prevState)}
+                nav
+                inNavbar>
+                <DropdownToggle nav caret>
+                  Select menu
+                </DropdownToggle>
+                <DropdownMenu className="m-0" right={false}>
+                  <DropdownItem>
+                    <NavItem>
+                      <Link to="/movies" className="text-dark text-decoration-none">
+                        Manage Movies
+                      </Link>
+                    </NavItem>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <NavItem>
+                      <Link to="/categories" className="text-dark text-decoration-none">
+                        Manage Categories
+                      </Link>
+                    </NavItem>
+                  </DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem disabled>
+                    <NavLink className="text-black-50">Connection List</NavLink>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              <Dropdown
+                isOpen={isMenuOpen}
+                onMouseEnter={() => setIsMenuOpen(true)}
+                onMouseLeave={() => setIsMenuOpen(false)}
+                toggle={() => setIsMenuOpen(prevState => !prevState)}
+                nav
+                inNavbar>
+                <DropdownToggle nav caret>
+                  Select menu
+                </DropdownToggle>
+                <DropdownMenu className="m-0" onMouseEnter={() => setIsMenuOpen(false)} right={false}>
+                  <DropdownItem disabled>Login first!</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            )}
+          </Nav>
+          <Nav className="ml-auto" navbar>
+            {Login ? (
+              <Dropdown
+                isOpen={isAccountOpen}
+                onMouseEnter={() => setIsAccountOpen(true)}
+                onMouseLeave={() => setIsAccountOpen(false)}
+                toggle={() => setIsAccountOpen(prevState => !prevState)}
+                nav
+                inNavbar>
+                <DropdownToggle nav>
+                  Hi, {Name}! <FaRegUser />
+                </DropdownToggle>
+                <DropdownMenu className="m-0" right>
+                  <DropdownItem>
+                    <NavLink style={{ color: "inherit" }} onClick={handleLogout}>
+                      Logout
+                    </NavLink>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              <Dropdown
+                isOpen={isAccountOpen}
+                onMouseEnter={() => setIsAccountOpen(true)}
+                onMouseLeave={() => setIsAccountOpen(false)}
+                toggle={() => setIsAccountOpen(prevState => !prevState)}
+                nav
+                inNavbar>
+                <DropdownToggle onClick={() => dispatch({ type: "MODAL_AUTH", payload: true })} nav>
+                  Hi, {Name}! <FaRegUser />
+                </DropdownToggle>
+                <DropdownMenu className="m-0" onMouseEnter={() => setIsAccountOpen(false)} right>
+                  <DropdownItem disabled>click to Login/Register!</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            )}
+            <NavItem>
+              <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
+            </NavItem>
+          </Nav>
+        </Collapse>
+      </Navbar>
+    </div>
+  );
 };
 
 export default Header;

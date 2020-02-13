@@ -1,6 +1,6 @@
 const INITIAL_STATE = {
   id: 0,
-  name: "",
+  name: "Watchers",
   username: "",
   email: "",
   role: "",
@@ -18,12 +18,14 @@ const INITIAL_STATE = {
   textUserLog: "",
   textPassLog: "",
 
+  errorSecret: false,
   errorName: false,
   errorUser: false,
   errorPass: false,
   errorEmail: false,
   errorServer: false,
 
+  textSecret: "",
   textName: "",
   textUser: "",
   textPass: "",
@@ -67,12 +69,20 @@ export default (state = INITIAL_STATE, action) => {
     case "WRONG_PASSLOG":
       return {
         ...state,
+        errorUserLog: false,
         errorPassLog: true,
         textPassLog: action.payload
+      };
+    case "WRONG_SECRET":
+      return {
+        ...state,
+        errorSecret: true,
+        textSecret: action.payload
       };
     case "WRONG_USER":
       return {
         ...state,
+        errorSecret: false,
         errorUser: true,
         textUser: action.payload
       };

@@ -68,10 +68,11 @@ export const CheckUsernameThunk = username => {
   };
 };
 
-export const RegisterActionThunk = (name, username, email, password, password2) => {
+export const RegisterActionThunk = (secret, name, username, email, password, password2) => {
   return async dispatch => {
     try {
       let newUser = await Axios.post(`${API_URL}/auth/register`, {
+        secret,
         name,
         username,
         email,
@@ -82,6 +83,8 @@ export const RegisterActionThunk = (name, username, email, password, password2) 
       switch (newUser.data.status) {
         case "WRONG_FORM":
           return dispatch({ type: "WRONG_FORM", payload: newUser.data.message });
+        case "WRONG_SECRET":
+          return dispatch({ type: "WRONG_SECRET", payload: newUser.data.message });
         case "WRONG_USER":
           return dispatch({ type: "WRONG_USER", payload: newUser.data.message });
         case "GOOD_USER":

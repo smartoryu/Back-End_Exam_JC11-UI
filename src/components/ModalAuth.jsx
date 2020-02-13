@@ -37,11 +37,13 @@ function ModalAuth() {
   const TextUserLog = useSelector(state => state.auth.textUserLog);
   const TextPassLog = useSelector(state => state.auth.textPassLog);
 
+  const ErrorSecret = useSelector(state => state.auth.errorSecret);
   const ErrorName = useSelector(state => state.auth.errorName);
   const ErrorUser = useSelector(state => state.auth.errorUser);
   const ErrorPass = useSelector(state => state.auth.errorPass);
   const ErrorEmail = useSelector(state => state.auth.errorEmail);
 
+  const TextSecret = useSelector(state => state.auth.textSecret);
   const TextUser = useSelector(state => state.auth.textUser);
   const TextPass = useSelector(state => state.auth.textPass);
   const dispatch = useDispatch();
@@ -51,15 +53,20 @@ function ModalAuth() {
     username: "",
     password: ""
   });
-  // console.log(login);
 
   const handleLoginValues = e => {
     let { name, value } = e.target;
     setLogin({ ...login, [name]: value });
   };
+  const loginKeyPress = e => {
+    if (e.key === "Enter") {
+      dispatch(LoginActionThunk(login.username, login.password));
+    }
+  };
 
   // ============================================== STATE VALUES REGISTER ==
   const [register, setRegister] = useState({
+    secret: "",
     name: "",
     username: "",
     email: "",
@@ -69,6 +76,20 @@ function ModalAuth() {
   const handleRegisterValues = event => {
     let { name, value } = event.target;
     setRegister({ ...register, [name]: value });
+  };
+  const registerKeyPress = e => {
+    if (e.key === "Enter") {
+      dispatch(
+        RegisterActionThunk(
+          register.secret,
+          register.name,
+          register.username,
+          register.email,
+          register.password,
+          register.password2
+        )
+      );
+    }
   };
 
   // ================================================== SHOW/HIDE PASSWORD ==
@@ -119,6 +140,7 @@ function ModalAuth() {
         </CardHeader>
         <CardBody>
           <TabContent activeTab={activeTab}>
+            {/* ========== TAB LOGIN ========== */}
             <TabPane tabId="1">
               <div className="login">
                 <Form>
@@ -130,9 +152,11 @@ function ModalAuth() {
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input
+                        autoFocus={true}
                         style={{ zIndex: "10" }}
                         invalid={ErrorUserLog}
                         onChange={handleLoginValues}
+                        onKeyPress={loginKeyPress}
                         type="text"
                         name="username"
                         placeholder="Username"
@@ -152,6 +176,7 @@ function ModalAuth() {
                         style={{ zIndex: "10" }}
                         invalid={ErrorPassLog}
                         onChange={handleLoginValues}
+                        onKeyPress={loginKeyPress}
                         type={typePass}
                         name="password"
                         placeholder="Password"
@@ -167,7 +192,7 @@ function ModalAuth() {
                           </Button>
                         )}
                       </InputGroupAddon>
-                      {ErrorPassLog ? <FormFeedback className="form-error-message">{TextPassLog}</FormFeedback> : null}
+                      {ErrorPassLog ? <FormFeedback className="ml-5 float-left">{TextPassLog}</FormFeedback> : null}
                     </InputGroup>
                   </FormGroup>
 
@@ -199,6 +224,26 @@ function ModalAuth() {
             <TabPane tabId="2">
               <div className="register">
                 <Form>
+                  <FormGroup id="form-secret">
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <FaUserAlt color="#bababa" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        style={{ zIndex: "10" }}
+                        invalid={ErrorSecret}
+                        onChange={handleRegisterValues}
+                        type="text"
+                        name="secret"
+                        id="register-secret"
+                        placeholder="Secret code"
+                      />
+                      {ErrorSecret ? <FormFeedback className="form-error-message">{TextSecret}</FormFeedback> : null}
+                    </InputGroup>
+                  </FormGroup>
+
                   <FormGroup id="form-name">
                     <InputGroup>
                       <InputGroupAddon addonType="prepend">
@@ -209,7 +254,6 @@ function ModalAuth() {
                       <Input
                         style={{ zIndex: "10" }}
                         valid={ErrorName}
-                        // invalid
                         onChange={handleRegisterValues}
                         type="text"
                         name="name"
@@ -340,6 +384,7 @@ function ModalAuth() {
                           onClick={() =>
                             dispatch(
                               RegisterActionThunk(
+                                register.secret,
                                 register.name,
                                 register.username,
                                 register.email,
