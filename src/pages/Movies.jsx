@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
+import { InputGroup, InputGroupAddon, Input } from "reactstrap";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,30 +13,67 @@ import { PaginationComp } from "../components/Pagination";
 function Movies() {
   const Login = useSelector(state => state.auth.login);
   const [movies, setMovies] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [maxPage, setMaxPage] = useState(0);
+  const [limitPage, setLimitPage] = useState(5);
+  const [currentSearchPage, setCurrentSearchPage] = useState(1);
+  const [pagesCount, setPagesCount] = useState(0);
+  const [searchPagesCount, setSearchPagesCount] = useState(0);
 
   const [onEdit, setOnEdit] = useState(-1);
   const [onDelete, setOnDelete] = useState(-1);
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // ================================================== GET DATA
   useEffect(() => {
     const getMovies = async () => {
       try {
-        const { data } = await Axios.get(`${API_URL}/movie/page/${currentPage}`);
-        setMovies(data.results);
-        setMaxPage(data.maxPage);
+        if (currentPage > 0) {
+          const { data } = await Axios.get(`${API_URL}/movie`, { params: { page: currentPage, limit: limitPage } });
+          setMovies(data.results);
+          setPagesCount(data.pagesCount);
+        } else {
+          const { data } = await Axios.get(`${API_URL}/movie/search`, {
+            params: { search: searchQuery, page: currentSearchPage }
+          });
+          // console.log(data);
+          setCurrentPage(0);
+          setMovies(data.results);
+          setSearchPagesCount(data.pagesCount);
+        }
       } catch (err) {
         console.log(err);
       }
     };
     getMovies();
-  }, [currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, currentSearchPage]);
 
+  // ================================================== ON ENTER SEARCH QUERY
+  const searchKeyPress = async e => {
+    if (e.key === "Enter") {
+      try {
+        const { data } = await Axios.get(`${API_URL}/movie/search`, {
+          params: { search: searchQuery, page: currentSearchPage }
+        });
+        console.log(data);
+        setCurrentPage(0);
+        setMovies(data.results);
+        setSearchPagesCount(data.pagesCount);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  // ================================================== GET DATA
   const handlePageClick = (e, idx) => {
     e.preventDefault();
     setCurrentPage(idx);
   };
 
+  // ================================================== CONST HANDLE SEARCH
   const btnDelete = id => {
     toast.warn("Are you sure?", {
       position: "top-center",
@@ -90,11 +128,11 @@ function Movies() {
     });
   };
 
-  // if (!Login) {
-  //   return <Redirect to="/" />;
-  // } else if (movies.length === 0) {
-  //   return <div>loading</div>;
-  // }
+  if (!Login) {
+    return <Redirect to="/" />;
+  } else if (movies.length === 0) {
+    return <div>loading</div>;
+  }
   return (
     <div className="App">
       <section className="App-container">
@@ -103,12 +141,21 @@ function Movies() {
         </h2>
 
         <PaginationComp
+          className="mt-5"
           currentPage={currentPage}
-          pagesCount={maxPage}
+          totalPages={pagesCount}
+          pageNeighbours={1}
           handlePageClick={handlePageClick}
           handlePreviousClick={handlePageClick}
           handleNextClick={handlePageClick}
         />
+
+        <div className="mb-3 w-25">
+          <InputGroup size="sm">
+            <InputGroupAddon addonType="prepend">Search:</InputGroupAddon>
+            <Input type="text" onKeyPress={searchKeyPress} onChange={e => setSearchQuery(e.target.value)} />
+          </InputGroup>
+        </div>
 
         <table className="table table-dark table-hover">
           <thead>

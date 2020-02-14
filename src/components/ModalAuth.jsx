@@ -116,6 +116,7 @@ function ModalAuth() {
 
   return (
     <Modal
+      autoFocus={false}
       fade={false}
       style={{ backgroundColor: "transparent", width: "300px" }}
       centered
