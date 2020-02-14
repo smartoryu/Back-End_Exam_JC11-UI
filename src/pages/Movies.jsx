@@ -25,7 +25,7 @@ function Movies() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ================================================== GET DATA
+  // ================================================== GET DATA MOVIE
   useEffect(() => {
     const getMovies = async () => {
       try {
