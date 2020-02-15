@@ -97,14 +97,14 @@ export const PaginationComp = props => {
         if (page === LEFT_PAGE)
           return (
             <PaginationItem style={{ width: 45 }} className={className} key={index}>
-              <PaginationLink onClick={e => handlePageClick(e, currentPage - 1)} previous href="#" />
+              <PaginationLink onClick={e => handlePageClick(e, currentPage - pageNeighbours * 2 - 1)} first href="#" />
             </PaginationItem>
           );
 
         if (page === RIGHT_PAGE)
           return (
             <PaginationItem style={{ width: 45 }} className={className} key={index}>
-              <PaginationLink onClick={e => handlePageClick(e, currentPage + 1)} next href="#" />
+              <PaginationLink onClick={e => handlePageClick(e, currentPage + pageNeighbours * 2 + 1)} last href="#" />
             </PaginationItem>
           );
 

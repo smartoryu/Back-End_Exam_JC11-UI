@@ -129,7 +129,7 @@ function Movies() {
   };
 
   if (!Login) {
-    return <Redirect to="/" />;
+    // return <Redirect to="/" />;
   } else if (movies.length === 0) {
     return <div>loading</div>;
   }

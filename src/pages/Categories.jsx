@@ -8,6 +8,7 @@ import { InputGroup, InputGroupAddon, Input } from "reactstrap";
 
 import { API_URL } from "../config/API_URL";
 
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { PaginationComp } from "../components/Pagination";
 
 function Categories() {
@@ -19,6 +20,8 @@ function Categories() {
   const [currentSearchPage, setCurrentSearchPage] = useState(1);
   const [pagesCount, setPagesCount] = useState(0);
   const [searchPagesCount, setSearchPagesCount] = useState(0);
+
+  const [ascendSort, setAscendSort] = useState(true);
 
   const [onEdit, setOnEdit] = useState(-1);
   const [onDelete, setOnDelete] = useState(-1);
@@ -35,9 +38,8 @@ function Categories() {
           setPagesCount(data.pagesCount);
         } else {
           const { data } = await Axios.get(`${API_URL}/cat/search`, {
-            params: { search: searchQuery, page: currentSearchPage }
+            params: { search: searchQuery, page: currentSearchPage, limit: limitPage }
           });
-          // console.log(data);
           setCurrentPage(0);
           setCategories(data.results);
           setSearchPagesCount(data.pagesCount);
@@ -59,6 +61,7 @@ function Categories() {
         });
         console.log(data);
         setCurrentPage(0);
+        setPagesCount(0);
         setCategories(data.results);
         setSearchPagesCount(data.pagesCount);
       } catch (err) {
@@ -70,9 +73,11 @@ function Categories() {
   // ================================================== ON CLICK PAGINATION
   const handlePageClick = (e, idx) => {
     e.preventDefault();
-    if (currentPage > 0) {
+    if (pagesCount > 0) {
       setCurrentPage(idx);
     } else {
+      setPagesCount(0);
+      setCurrentPage(0);
       setCurrentSearchPage(idx);
     }
   };
@@ -88,7 +93,6 @@ function Categories() {
       // onClose: () => {}
     });
   };
-
   const confirmDelete = () => {
     toast.error("Delete!", {
       position: "top-center",
@@ -98,7 +102,6 @@ function Categories() {
       onOpen: () => setOnDelete(-1)
     });
   };
-
   const btnEdit = id => {
     toast(<span className="font-weight-bold text-dark">Edit</span>, {
       position: "top-center",
@@ -109,7 +112,6 @@ function Categories() {
       // onClose: () => {}
     });
   };
-
   const btnSave = () => {
     toast.info(<span className="font-weight-bold text-dark">Save</span>, {
       position: "top-center",
@@ -120,7 +122,6 @@ function Categories() {
       // onClose: () => {}
     });
   };
-
   const btnCancel = () => {
     toast.warn(<span className="font-weight-bold text-dark">Cancel</span>, {
       position: "top-center",
@@ -132,9 +133,12 @@ function Categories() {
     });
   };
 
+  // console.log("pagesCount", pagesCount);
+  // console.log("searchPagesCount", searchPagesCount);
+
   if (!Login) {
-    return <Redirect to="/" />;
-  } else if (categories.length === 0) {
+    // return <Redirect to="/" />;
+  } else if (!Categories) {
     return <div>loading</div>;
   }
   return (
@@ -146,8 +150,8 @@ function Categories() {
 
         <PaginationComp
           className="mt-5"
-          currentPage={currentPage}
-          totalPages={pagesCount}
+          currentPage={currentPage || currentSearchPage}
+          totalPages={pagesCount || searchPagesCount}
           pageNeighbours={1}
           handlePageClick={handlePageClick}
           handlePreviousClick={handlePageClick}
@@ -165,7 +169,12 @@ function Categories() {
           <thead>
             <tr className="text-center">
               <th scope="col">#</th>
-              <th scope="col">Category Name</th>
+              <th scope="col">
+                <button className="btn w-100 text-light " onClick={() => setAscendSort(!ascendSort)}>
+                  Category Name
+                  <span className="float-right">{ascendSort ? <FaChevronDown /> : <FaChevronUp />}</span>
+                </button>
+              </th>
               <th scope="col">Action</th>
             </tr>
           </thead>
