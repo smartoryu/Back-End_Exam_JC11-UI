@@ -11,21 +11,22 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 import { FaRegUser } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
-  const Name = useSelector(state => state.auth.name);
-  const Login = useSelector(state => state.auth.login);
+  const location = useLocation();
   const dispatch = useDispatch();
+  const Name = useSelector((state) => state.auth.name);
+  const Login = useSelector((state) => state.auth.login);
 
   const [isCollapse, setIsCollapse] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-
+  console.log(location.pathname);
   const handleCollapse = () => setIsCollapse(!isCollapse);
 
   const handleLogout = () => {
@@ -40,14 +41,27 @@ const Header = () => {
         localStorage.removeItem("userID");
         localStorage.removeItem("token");
         dispatch({ type: "LOGOUT" });
-      }
+      },
     });
   };
+
+  function handleTitle() {
+    switch (location.pathname) {
+      case "/":
+        return "Backend Exam";
+      case "/movies":
+        return "Manage Movies";
+      case "/categories":
+        return "Manage Categories";
+      default:
+        break;
+    }
+  }
 
   return (
     <div>
       <Navbar color="dark" dark expand="md">
-        <NavbarBrand href="/">BackEnd Exam</NavbarBrand>
+        <NavbarBrand href="/">{handleTitle()}</NavbarBrand>
         <NavbarToggler onClick={handleCollapse} />
         <Collapse isOpen={isCollapse} navbar>
           <Nav className="mr-auto" navbar>
@@ -56,7 +70,7 @@ const Header = () => {
                 isOpen={isMenuOpen}
                 onMouseEnter={() => setIsMenuOpen(true)}
                 onMouseLeave={() => setIsMenuOpen(false)}
-                toggle={() => setIsMenuOpen(prevState => !prevState)}
+                toggle={() => setIsMenuOpen((prevState) => !prevState)}
                 nav
                 inNavbar>
                 <DropdownToggle nav caret>
@@ -88,7 +102,7 @@ const Header = () => {
                 isOpen={isMenuOpen}
                 onMouseEnter={() => setIsMenuOpen(true)}
                 onMouseLeave={() => setIsMenuOpen(false)}
-                toggle={() => setIsMenuOpen(prevState => !prevState)}
+                toggle={() => setIsMenuOpen((prevState) => !prevState)}
                 nav
                 inNavbar>
                 <DropdownToggle nav caret>
@@ -106,7 +120,7 @@ const Header = () => {
                 isOpen={isAccountOpen}
                 onMouseEnter={() => setIsAccountOpen(true)}
                 onMouseLeave={() => setIsAccountOpen(false)}
-                toggle={() => setIsAccountOpen(prevState => !prevState)}
+                toggle={() => setIsAccountOpen((prevState) => !prevState)}
                 nav
                 inNavbar>
                 <DropdownToggle nav>
@@ -125,7 +139,7 @@ const Header = () => {
                 isOpen={isAccountOpen}
                 onMouseEnter={() => setIsAccountOpen(true)}
                 onMouseLeave={() => setIsAccountOpen(false)}
-                toggle={() => setIsAccountOpen(prevState => !prevState)}
+                toggle={() => setIsAccountOpen((prevState) => !prevState)}
                 nav
                 inNavbar>
                 <DropdownToggle onClick={() => dispatch({ type: "MODAL_AUTH", payload: true })} nav>
@@ -136,9 +150,6 @@ const Header = () => {
                 </DropdownMenu>
               </Dropdown>
             )}
-            <NavItem>
-              <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
-            </NavItem>
           </Nav>
         </Collapse>
       </Navbar>
